@@ -1,0 +1,325 @@
+Terraform from HashCORP
+based on HCL hashiCorp Configuration Langauge
+Infrastructure as a code:
+
+IT Infra:
+Hardware, Software, Network and Data Centers
+
+Why Terrform:
+-slow deployment
+-Expensive
+-Limited Automation
+-Human error
+-Wasted resource
+
+Using AWS EC2-
+
+Run ubuntu ec2 instance 
+
+# Search terraform install and follow steps
+after successfully installing terraform 
+
+apt install terraform
+terraform --version
+apt-get install docker.io
+apt install git
+
+create seperate directory name it = DO your work inside it
+------------------------------------------------------------------
+https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-build
+------------------------------------------------------------------
+Terrform:-
+-ConfigFile/Refresh
+-plan
+-apply
+-destroy
+
+Providers enable Terraform to work with virtually any platform or service with an accessible API.
+
+
+vim local.tf
+------------------------------------------------------------
+resource "local_file" "devOps" {
+        filename = "/home/ubuntu/terraform/terraform-local/devops-automated.txt"
+        content = "I want to be a DevOps engineer who knows terraform"
+}
+--------------------------------------------------------------
+
+terraform init 		initializes the terraform
+terraform validate	check configurationfile is ok or not(Success)
+terraform plan		background plan of Terraform
+terraform apply		creates
+terraform show
+terraform state list
+
+vim random_str.tf
+---------------------------------------------------------------
+
+resource "random_string" "rand-str" {
+        length = 21
+        special = true
+        override_special = "<>[]{!@$#%&*_+=-"
+}
+
+output "rand-str" {
+        value=random_string.rand-str[*].result
+}
+---------------------------------------------------------------
+
+
+main.tf
+---------------------------------------------------------------
+terraform {
+	required_providers {
+      	docker = {
+        source = "kreuzwerker/docker"
+        version = "~> 2.21.0"
+}
+}
+}
+
+provider "docker" {}
+
+resource "docker_image" "nginx" {
+        name = "nginx:latest"
+        keep_locally = false
+
+}
+
+resource "docker_container" "nginx" {
+        image = docker_image.nginx.latest
+        name = "nginx-tf"
+        ports {
+                internal = 80
+                external = 80
+}
+}
+------------------------------------------------------------------
+
+
+MyWebPage.tf
+------------------------------------------------------------------
+terraform {
+	required_providers {
+      	docker = {
+        source = "kreuzwerker/docker"
+        version = "~> 2.21.0"
+}
+}
+}
+
+provider "docker" {}
+
+resource "docker_image" "webpage" {
+        name = "chaitannyaa/webpage:latest"
+        keep_locally = false
+
+}
+
+resource "docker_container" "mywebpage" {
+        image = docker_image.webpage.latest
+        name = "webpage-tf"
+        ports {
+                internal = 8501
+                external = 80
+}
+}
+----------------------------------------------------------------
+
+Variables:
+
+same directory can have two or more tf files
+main.tf , variables.tf
+
+main.tf
+----------------------------------------------------------------
+resource "local_file" "devOps" {
+        filename = var.file_list[0]
+        content = var.content_map["content1"]
+}
+
+resource "local_file" "devops-var" {
+        filename = var.file_list[1]
+        content = var.content_map["content2"]
+}
+
+output "devops_op_trainer" {
+        value = var.devops_op_trainer
+}
+---------------------------------------------------------------
+
+variables.tf
+---------------------------------------------------------------
+variable "filename" {
+        default = "/home/ubuntu/terraform/terraform-variable/devops-automated.txt"
+}
+
+variable "content" {
+        default = "This is auto-generated file content"
+}
+
+variable "devops_op_trainer" {}
+
+variable "content_map" {
+        type = map
+        default = {
+        "content1" = "this is content 1"
+        "content2" = "this is content 2"
+}
+}
+
+variable "file_list" {
+        type = list
+        default = ["/home/ubuntu/terraform/terraform-variable/file1.txt","/home/ubuntu/terraform/terraform-variable/file2.txt"]
+}
+-------------------------------------------------------------------
+
+
+Variable Type here is Object
+
+variables.tf
+-------------------------------------------------------------------
+variable "aws_ec2_object" {
+	type = object ({
+		name = string
+		instances = number
+		keys = list(string)
+		ami = string 
+})
+	default = {
+		name = "test_ec2_instances"
+		instances = 4
+		keys = ["key1.pem","key2.pem"]
+		ami = "ae23se33swds"
+} 
+}	
+---------------------------------------------------------------------
+
+main.tf
+--------------------------------------------------------------------
+output "aws_ec2_info" {
+	value = var.aws_ec2_object.instances
+}
+--------------------------------------------------------------------
+
+Now .tfvars or .tfvars.json files
+====================================================================
+terraform apply -var-file=filename.tfvars
+====================================================================
+
+prod.tfvars.json
+-------------------------------------------------------------------
+{
+"batch" : 1,
+"no_of_containers" : 3
+}
+-------------------------------------------------------------------
+
+main.tf
+-------------------------------------------------------------------
+output "tf_batch_containers" {
+        value = var.no_of_containers
+}
+-------------------------------------------------------------------
+
+variables.tf
+-------------------------------------------------------------------
+variable "no_of_containers" {}
+-------------------------------------------------------------------
+
+====================================================================
+terraform apply -var-file=prod.tfvars.json
+====================================================================
+
+
+Terraform State is a blueprint of real world infrastructure with unique ids and attributes
+
+it is a registry of whatever we do..
+.tfstate file in the same location
+
+This is the final copy of infra
+
+-------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

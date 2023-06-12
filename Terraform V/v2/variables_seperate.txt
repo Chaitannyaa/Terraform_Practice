@@ -1,0 +1,84 @@
+If a variable is set in multiple sources, the ordering described above is followed.
+
+Terraform variable loading preference -
+
+Environment variables
+Variable files (files with a .tfvars or terraform.tfvars.json extension)
+From Terraform files (using .tf files)
+From the command line (using the -var flag)
+--------------------------------------------------------------------------
+
+.tfvars and in that file, we are going to assign VALUES to the variable -
+terraform.tfvars
+--------------------------------
+# terraform-prod.tfvars 
+
+instance_type   =   "t2.micro"
+tag             =   "EC2 Instnace for DEV"
+location        =    "eu-central-1" 
+
+# 1. terraform init for PROD 
+
+terraform init --var-file="terraform-prod.tfvars"
+
+# 2. terraform plan for PROD 
+
+terraform plan --var-file="terraform-prod.tfvars"
+
+# 3. terraform apply for PROD 
+
+terraform apply --var-file="terraform-prod.tfvars"
+---------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

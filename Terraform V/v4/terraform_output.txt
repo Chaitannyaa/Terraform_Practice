@@ -1,0 +1,55 @@
+Terraform output:
+1) Static Value
+2) Dynamic Value
+
+How to use Terraform output values?
+
+Static Output
+--------------------
+output "plan_output" {
+  value = "Hello, This is sample output"
+} 
+
+
+Dynamic Output
+--------------------
+output "Instance_Public_IP" {
+  value = aws_instance.ec2_example.public_ip
+} 
+
+It is completely okay to create terraform output values inside the main.tf but this practice is certainly not recommended in the industry.
+
+How to create output.tf for terraform output values
+
+output.tf
+--------------------
+output "Instance_Public_IP" {
+  value = aws_instance.ec2_example.public_ip
+} 
+----------------------
+
+output.tf
+--------------------
+output "Instance_Public_IP" {
+  value = aws_instance.ec2_example.public_ip
+  sensitive = true
+} 
+----------------------
+
+output.tf
+--------------------
+output "instance_ips" {
+  value = {
+    public_ip  = aws_instance.example.public_ip
+    private_ip = aws_instance.example.private_ip
+  }
+} 
+
+
+Using join function- You can also output multiple attributes from a resource using join function
+
+output.tf
+--------------------
+output "security_groups" {
+  value = join(",",aws_instance.example.*.security_groups)
+} 

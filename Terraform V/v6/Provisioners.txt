@@ -1,0 +1,190 @@
+Terraform provisioners
+
+There are two types of provisioners -
+
+Generic Provisioners (file, local-exec, and remote-exec)
+Vendor Provisioners (chef, habitat, puppet, salt-masterless)
+
+1) File Provisioners -
+
+As the name suggests file provisioner can be used for transferring and copying the files from one machine to another machine.
+
+Not only file but it can also be used for transferring/uploading the directories.
+
+syntax
+---------------
+provisioner "file" {
+    source      = "/home/rahul/Jhooq/keys/aws/test-file.txt"
+    destination = "/home/ubuntu/test-file.txt"
+} 
+OR
+provisioner "file" {
+    content     = "I want to copy this string to the destination file server.txt"
+    destination = "/home/ubuntu/server.txt"
+}
+
+2) local-exec Provisioners -
+
+this provisioner is used when you want to perform some tasks onto your local machine where you have installed the terraform.
+
+syntax
+---------------
+provisioner "local-exec" {
+	command = "touch hello-jhooq.txt"
+}
+
+Always consider command as shell script executioner because whatever you pass in the command will be executed as a bash shell script.
+
+working_dir - Here are the key facts about the working_dir arguments
+
+interpreter - you can explicitly specify in which environment(bash, PowerShell, perl etc.) you are going to execute the command.
+
+environment - you can define or set environment variables that can be accessible later or inside your terraform execution.
+
+syntax
+---------------
+provisioner "local-exec" {
+    working_dir = /.../../...
+    interpreter = ["perl", "-e"] OR interpreter = ["PowerShell", "-Command"] OR interpreter = ["/bin/bash", "-c"]
+    command = "echo $VAR1 $VAR2 $VAR3 >> my_vars.txt"
+    environment = {
+      VAR1 = "my-value-1"
+      VAR2 = "my-value-2"
+      VAR3 = "my-value-3"
+    }
+    	
+}
+
+2) remote-exec Provisioners -
+
+With the help of the remote-exec you can specify the commands of shell scripts that want to execute on the remote machine.
+
+syntax
+---------------
+provisioner "remote-exec" {
+    inline = [
+      "touch hello.txt",
+      "echo 'helloworld remote provisioner' >> hello.txt",
+    ]
+}
+
+--------------------------------------------------------------
+
+main.tf
+-------------------------------------------------------------
+provider "aws" {
+   region     = "us-east-1"
+   access_key = "AKIA27CR22N3OCTIFG3D"
+   secret_key = "2hLr2FAZ9xUwf2h9Ay+kxHESK689pRcUApAfTwAm"
+   
+}
+
+resource "aws_instance" "ec2_example" {
+
+    ami = "ami-0557a15b87f6559cf"  
+    instance_type = "t2.micro" 
+    key_name= "aws_key"
+    vpc_security_group_ids = [aws_security_group.main.id]
+    tags = { Name = "Ubuntu test" }
+
+  provisioner "remote-exec" {
+    inline = [
+      "touch hello1.txt",
+      "echo 'helloworld remote provisioner' >> hello1.txt",
+    ]
+  }
+
+  provisioner "file" {
+    source      = "/home/krishiva/terraform/copy.txt"
+    destination = "/home/ubuntu/test-file.txt"
+  }
+
+  provisioner "local-exec" {
+    working_dir = "/home/krishiva/terraform/"
+    interpreter = ["/bin/bash", "-c"]	
+    command = "echo $VAR1 $VAR2 $VAR3 >> my_vars.txt"
+    environment = {
+      VAR1 = "my-value-1"
+      VAR2 = "my-value-2"
+      VAR3 = "my-value-3"
+    }
+    
+  } 
+
+  connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = file("/home/krishiva/terraform/aws_key")
+      timeout     = "4m"
+   }
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress                = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 22
+  }
+  ]
+  tags = { Name = "Terraform_Generated" }
+}
+
+
+resource "aws_key_pair" "tester" {
+  key_name   = "aws_key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMjjdrBLXhF08OABkmdp21Ba6O2k96yunuTmKWS3Er/05+nE3fAFfytXvWxbX/0N3isdvA0oO4P8KrS551hVFyGLGPfKzAjceMzMYD0QWU/TJyd7syVv7n/QGlmdr9M7y+FBlxbEGJdB0R44YMrvA7qI7/QKWR6J6Y/8yIlJy/+f/kAqCfJPljs8dX9GGOfELlgCOAmWcmxGrjKVbwveeYUXCz4lleFazfJw6zFLh1r0SWkrsZuTTJ++z66HK83j6rcJnsqxHZEDIbwARpg0o0tiCIFqiK3eEEPedXrUqIovtlYVj+FJhwjcz3BBQALO9Jyhf9SAVVWY17VJ9/1ikL krishiva@DESKTOP-FAHNVP6"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

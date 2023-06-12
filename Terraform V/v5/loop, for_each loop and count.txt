@@ -1,0 +1,106 @@
+Loops with count:
+
+variables.tf
+--------------------
+variable "user_names" {
+  description = "IAM usernames"
+  type        = list(string)
+  default     = ["user1", "user2", "user3"]
+}
+
+main.tf
+-------------------
+provider "aws" {
+   region     = "eu-central-1"
+   access_key = "AKIATQ37NXB2OBQHAALW"
+   secret_key = "ilKygurap8zSErv7jySTDi2796WGqMkEtN6txxxx"
+}
+
+resource "aws_iam_user" "test" {
+  count = length(var.user_names)
+  name  = var.user_names[count.index]
+}
+
+variable "user_names" {
+  description = "IAM usernames"
+  type        = list(string)
+  default     = ["user1", "user2", "user3"]
+}
+----------------------------------------------------------
+
+====================
+Loops with for_each:
+
+The for_each is a little special in terraforming and you can not use it on any collection variable.
+
+Note : - It can only be used on set(string) or map(string).
+
+main.tf
+--------------
+provider "aws" {
+   region     = "eu-central-1"
+   access_key = "AKIATQ37NXB2NN3D4ARS"
+   secret_key = "3v9mlwZQvmccL3ou1dxiDeEf1bWaG3kccpVlXXXX"
+}
+
+variable "user_names" {
+  description = "IAM usernames"
+  type        = set(string)
+  default     = ["user1", "user2", "user3"]
+}
+
+resource "aws_iam_user" "example" {
+  for_each = var.user_names
+  name  = each.value
+}
+
+variable "iam_users" {
+  description = "role of iam user"
+  type        = map(string)
+  default     = {
+    user1  = "normal user"
+    user2  = "admin user"
+    user3  = "root user"
+  }
+}
+
+output "print_the_names" {
+  value = [for name in var.user_names : name]
+}
+
+output "user_with_roles" {
+  value = [for name, role in var.iam_users : "${name} is the ${role}"]
+}
+------------------------------------------
+
+Here is the difference between list and map syntax
+
+For list -
+{for <ITEM> in <LIST> : <OUTPUT_VALUE>}
+
+For Map -
+{for <KEY>, <VALUE> in <MAP> : <OUTPUT_KEY>, <OUTPUT_VALUE>}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+Terraform modules
+
+DRY principle is of software development area
+
+If you same pattern repeating then no need to write code again and again
+
+Module Structure
+-----------------------
+license
+Readme.MD
+main.tf
+variables.tf
+outputs.tf
+-----------------------
+
+Good to Know
+-----------------------
+terraform.tfstate
+terraform.tfstate.backup
+.terraform 
+*.tfvars
+.gitignore
+-----------------------
+
+
+

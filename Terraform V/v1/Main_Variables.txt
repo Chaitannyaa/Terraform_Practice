@@ -1,0 +1,183 @@
+Types of Terraform Variables
+There are two types of variables in Terraform -
+
+>	Simple values
+>	Collection Variable
+
+1.1 Simple Values variables
+As the name suggests Simple Values variables are which hold only a single value. Here the types of Simple Value variables -
+
+>string
+>number
+>bool
+
+1.2 Collection Variable
+In the collection variable, it consists of -
+
+>List
+>Map
+>Set
+-------------------------------------------------------
+
+>string
+variables.tf
+-------------------------------------------------------
+variable "instance_type" {
+	type = string
+	description = "instance type t2.micro"
+	default = "t2.micro" 
+}
+---------------------------------------------------------
+then in main.tf >>>> instance_type = var.instance_type
+
+>number
+variables.tf
+-------------------------------------------------------
+variable "instance_count" {
+  description = "EC2 instance count"
+  type        = number
+  default     = 2
+}  
+---------------------------------------------------------
+then in main.tf >>>> count = var.instance_count
+
+>bool
+variables.tf
+-------------------------------------------------------
+variable "enable_public_ip" {
+  description = "Enable public IP address"
+  type        = bool
+  default     = true
+}
+---------------------------------------------------------
+then in main.tf >>>>  associate_public_ip_address = var.enable_public_ip
+
+===============================================================
+
+>List
+variables.tf
+-------------------------------------------------------
+variable "user_names" {
+  description = "IAM usernames"
+  type        = list(string)
+  default     = ["user1", "user2", "user3"]
+}
+------------------------------------------------------
+main.tf
+-------------------------------------------------------
+resource "aws_iam_user" "create_users" {
+  count = length(var.user_names)
+  name  = var.user_names[count.index]
+}
+----------------------------------------------------------
+
+
+>Map
+variables.tf
+-------------------------------------------------------
+variable "project_environment" {
+  description = "project name and environment"
+  type        = map(string)
+  default     = {
+    project     = "project-alpha",
+    environment = "dev"
+  }
+}
+------------------------------------------------------
+main.tf
+-------------------------------------------------------
+resource "aws_instance" "ec2_instance" {
+
+   ami           = "ami-0767046d1677be5a0"
+   instance_type =  "t2.micro"
+
+   tags = var.project_environment
+
+}
+----------------------------------------------------------
+
+
+>Set
+main.tf
+-------------------------------------------------------
+locals {
+        instance_name = toset(["RadhaGovind","RadhaMadhav"])
+}
+
+resource "aws_instance" "my_ec2_instance" {
+        for_each = local.instance_name
+        ami = "ami-0557a15b87f6559cf"
+        instance_type = "t2.micro"
+        tags = {
+                Name = each.key
+}
+}
+----------------------------------------------------------------
+
+
+OUTPUT VARIABLES
+----------------------------------------------------------------
+In Terraform, output variables allow you to easily extract information about the resources that were created by Terraform. They allow you to easily reference the values of resources after Terraform has finished running.
+
+output "instance_ip" {
+   value = aws_instance.example.public_ip
+}
+==============================================
+ terraform output instance_ip
+52.11.222.33
+
+
+It's worth noting that you can also set the output variable to be sensitive, in that case, Terraform will mask the output value when it appears in output, making it more secure.
+
+
+Pass variable as tfvars file as command-line arguments
+-----------------------------------------------------------
+Create xyz.tfvars file
+What tfvars file should contain?
+
+A typical tfvars file should contain the variables that you want to pass to Terraform. Each variable should be in the form of variable_name = value. For example
+xyz.tfvars
+--------------------------------------
+project_id = "gcp-terraform-307119"
+location   = "europe-central2"
+--------------------------------------
+But should also create a variable.tf file also to define the variable type 
+
+variables.tf
+---------------------------------
+variable "project_id" {
+  type        = string
+  description = "The Project ID"
+}
+
+variable "location" {
+   description = "Region for project"
+   default     = "europe-central2"
+   type        = string
+}
+------------------------------------
+
+How to pass multiple variables files using -var-file?
+=====================================================
+terraform apply -var-file=xyz-1.tfvars -var-file=xyz-2.tfvars
+=====================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

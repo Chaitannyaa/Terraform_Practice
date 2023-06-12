@@ -1,0 +1,14 @@
+apt get update
+apt install git
+
+
+For pushing into git : 
+
+$ git init
+$ git status
+$ git add .
+$ git config --global user.name "Chaitannyaa"
+$ git config --global user.email "chaitannyaagaikwad@gmail.com"
+$ git commit -m "commit message"
+$ git remote add origin "https://github.com/Chaitannyaa/terraform.git"
+$ git push -u origin master

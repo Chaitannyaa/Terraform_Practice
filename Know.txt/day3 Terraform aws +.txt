@@ -1,0 +1,131 @@
+apt install terraform
+apt install docker.io
+apt install git
+apt install awscli
+
+Meta Arguments gives power..
+
+Meta Arguments:
+-	count
+-	for-each
+-	depends-on
+-	life-cycle
+
+
+main.tf
+------------------------------------------------------
+terraform {
+        required_providers {
+        aws = {
+        source = "hashicorp/aws"
+        version = "~> 4.16"
+}
+}
+        required_version = "~> 1.3.9"
+}
+
+provider "aws" {
+        region = "us-east-1"
+}
+
+resource "aws_instance" "my_ec2_instance" {
+        count = 2
+        ami = "ami-0557a15b87f6559cf"
+        instance_type = "t2.micro"
+        tags = {
+                Name = "Terraform - ${count.index}"
+}
+}
+--------------------------------------------------------
+
+main.tf
+--------------------------------------------------------
+terraform {
+        required_providers {
+        aws = {
+        source = "hashicorp/aws"
+        version = "~> 4.16"
+}
+}
+        required_version = "~> 1.3.9"
+}
+
+provider "aws" {
+        region = "us-east-1"
+}
+
+locals {
+        instance_name = toset(["RadhaGovind","RadhaMadhav"])
+}
+
+resource "aws_instance" "my_ec2_instance" {
+        for_each = local.instance_name
+        ami = "ami-0557a15b87f6559cf"
+        instance_type = "t2.micro"
+        tags = {
+                Name = each.key
+}
+}
+------------------------------------------------------------
+
+
+main.tf
+--------------------------------------------------------
+terraform {
+        required_providers {
+        aws = {
+        source = "hashicorp/aws"
+        version = "~> 4.16"
+}
+}
+        required_version = "~> 1.3.9"
+}
+
+provider "aws" {
+        region = "us-east-1"
+}
+
+locals {
+        instance_name = {"RadhaGovind":"ami-0dfcb1ef8550277af","RadhaMadhav":"ami-0c2b0d3fb02824d92"}
+}
+
+resource "aws_instance" "my_ec2_instance" {
+        for_each = local.instance_name
+        ami = each.value
+        instance_type = "t2.micro"
+        tags = {
+                Name = each.key
+}
+}
+------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
